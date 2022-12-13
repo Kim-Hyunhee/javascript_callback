@@ -109,5 +109,49 @@ a()
   });
 
 console.log("3");
+
 //  resolve가 호출 됐을 때 then 실행
-// Promise란 실행은 바로 하되 결괏갑을 나중에 원할 때 쓸 수 있는 것
+//  Promise란 실행은 바로 하되 결괏갑을 나중에 원할 때 쓸 수 있는 것
+//  실행은 바로 ---> 결괏값이 나올 때는 나중 -> 결괏값을 사용할 때는 더 나중
+//  실행은 바로 ---> 결괏값도 거의 바로 쓰고 싶은데 ---> 그 다음에 결괏값이 나오면 ---> then, await, Promise.all 이런 게 결괏값을 기다린 후에 실행된다.
+
+function delayP(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function a() {
+  await delayP(3000);
+  await delayP(6000);
+  await delayP(9000);
+}
+// 토탈 18초
+
+async function b() {
+  const p1 = delayP(3000);
+  const p2 = delayP(6000);
+  await Promise.all([p1, p2]);
+  await delayP(9000);
+}
+// 토탈 15초
+
+new Promise((resolve, reject) => {
+  const p1 = delayP(3000);
+  const p2 = delayP(6000);
+  return Promise.all([p1, p2]);
+});
+
+async function c() {
+  const a = await 1;
+  const b = await 2;
+  return a + b;
+}
+
+Promise.resolve(1)
+  .then((a) => {
+    return 2;
+  })
+  .then((b) => {
+    return a + b;
+  });
